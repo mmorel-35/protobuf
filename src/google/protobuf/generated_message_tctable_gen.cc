@@ -730,8 +730,7 @@ uint32_t FastParseTableSize(size_t num_fields,
 
 bool IsFieldTypeEligibleForFastParsing(const FieldDescriptor* field) {
   // Map, oneof, weak, and split fields are not handled on the fast path.
-  if (field->is_map() || field->real_containing_oneof() ||
-      false) {  // Weak fields are deprecated, always treat as false
+  if (field->is_map() || field->real_containing_oneof()) {
     return false;
   }
 
@@ -766,7 +765,7 @@ TailCallTableInfo::BuildFieldEntries(
     // the following typed fields are supported.
     return (field->type() == FieldDescriptor::TYPE_MESSAGE ||
             field->type() == FieldDescriptor::TYPE_GROUP) &&
-           !field->is_map() && !false &&  // Weak fields are deprecated
+           !field->is_map() &&
            !HasLazyRep(field, options) && !options.is_implicitly_weak &&
            options.use_direct_tcparser_table && is_non_cold(options);
   };
@@ -806,9 +805,6 @@ TailCallTableInfo::BuildFieldEntries(
             aux_entries.push_back({kEnumValidator, {map_value}});
           }
         }
-      } else if (false) {  // Weak fields are deprecated
-        // Disable the type card for this entry to force the fallback.
-        entry.type_card = 0;
       } else if (HasLazyRep(field, options)) {
         if (message_options.uses_codegen) {
           entry.aux_idx = aux_entries.size();
