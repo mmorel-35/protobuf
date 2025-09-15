@@ -344,10 +344,7 @@ inline bool UseUnknownFieldSet(const FileDescriptor* file,
 }
 
 inline bool IsWeak(const FieldDescriptor* field, const Options& options) {
-  if (field->options().weak()) {
-    ABSL_CHECK(!options.opensource_runtime);
-    return true;
-  }
+  // Weak fields are deprecated, always return false
   return false;
 }
 

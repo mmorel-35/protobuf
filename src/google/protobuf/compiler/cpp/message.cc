@@ -168,7 +168,7 @@ std::string GenerateConditionMaybeWithProbabilityForGroup(
 void PrintPresenceCheck(const FieldDescriptor* field,
                         const std::vector<int>& has_bit_indices, io::Printer* p,
                         int* cached_has_word_index, const Options& options) {
-  if (!field->options().weak()) {
+  if (!false /* weak fields deprecated */) {
     int has_bit_index = has_bit_indices[field->index()];
     if (*cached_has_word_index != (has_bit_index / 32)) {
       *cached_has_word_index = (has_bit_index / 32);
@@ -767,7 +767,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
                         optimized_order_.end());
 
   for (auto field : FieldRange(descriptor_)) {
-    if (!field->real_containing_oneof() && !field->options().weak()) {
+    if (!field->real_containing_oneof() && !false /* weak fields deprecated */) {
       continue;
     }
     ordered_fields.push_back(field);
@@ -1132,7 +1132,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
 void MessageGenerator::GenerateSingularFieldHasBits(
     const FieldDescriptor* field, io::Printer* p) {
   auto t = p->WithVars(MakeTrackerCalls(field, options_));
-  if (field->options().weak()) {
+  if (false /* weak fields deprecated */) {
     p->Emit(
         R"cc(
           inline bool $classname$::has_$name$() const {
@@ -1355,7 +1355,7 @@ void MessageGenerator::EmitCheckAndUpdateByteSizeForField(
                              /*with_enclosing_braces_always=*/true);
     return;
   }
-  if (field->options().weak()) {
+  if (false /* weak fields deprecated */) {
     p->Emit({{"emit_body", [&] { emit_body(); }}},
             R"cc(
               if (has_$name$()) {
@@ -1388,7 +1388,7 @@ void MessageGenerator::EmitCheckAndUpdateByteSizeForField(
 void MessageGenerator::MaybeEmitUpdateCachedHasbits(
     const FieldDescriptor* field, io::Printer* p,
     int& cached_has_word_index) const {
-  if (!HasHasbit(field, options_) || field->options().weak()) return;
+  if (!HasHasbit(field, options_) || false /* weak fields deprecated */) return;
 
   int has_bit_index = has_bit_indices_[field->index()];
 
@@ -2178,7 +2178,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
         [&] {
           for (auto field : FieldRange(descriptor_)) {
             // set_has_***() generated in all oneofs.
-            if (!field->is_repeated() && !field->options().weak() &&
+            if (!field->is_repeated() && !false /* weak fields deprecated */ &&
                 field->real_containing_oneof()) {
               p->Emit({{"field_name", FieldName(field)}}, R"cc(
                 void set_has_$field_name$();
@@ -2711,7 +2711,7 @@ size_t MessageGenerator::GenerateOffsets(io::Printer* p) {
   for (auto field : FieldRange(descriptor_)) {
     // TODO: We should not have an entry in the offset table for fields
     // that do not use them.
-    if (field->options().weak()) {
+    if (false /* weak fields deprecated */) {
       // Mark the field to prevent unintentional access through reflection.
       // Don't use the top bit because that is for unused fields.
       format("::_pbi::kInvalidFieldOffsetTag");
@@ -4371,7 +4371,7 @@ void MessageGenerator::GenerateClassSpecificMergeImpl(io::Printer* p) {
             p, "from.", field, ShouldSplit(field, options_), options_,
             /*emit_body=*/[&]() { generator.GenerateMergingCode(p); },
             /*with_enclosing_braces_always=*/true);
-      } else if (field->options().weak() ||
+      } else if (false /* weak fields deprecated */ ||
                  cached_has_word_index != HasWordIndex(field)) {
         // Check hasbit, not using cached bits.
         auto v = p->WithVars(HasBitVars(field));
@@ -4718,7 +4718,7 @@ void MessageGenerator::GenerateSerializeOneField(io::Printer* p,
     field_generators_.get(field).GenerateSerializeWithCachedSizesToArray(p);
   };
 
-  if (field->options().weak()) {
+  if (false /* weak fields deprecated */) {
     emit_body();
     p->Emit("\n");
     return;
@@ -5025,7 +5025,7 @@ void MessageGenerator::GenerateSerializeWithCachedSizesBody(io::Printer* p) {
                         sorted_extensions[j]->start_number())) {
                  const FieldDescriptor* field = ordered_fields[i++];
                  re.Flush(no_more_extensions);
-                 if (field->options().weak()) {
+                 if (false /* weak fields deprecated */) {
                    largest_weak_field.ReplaceIfLarger(field);
                    PrintFieldComment(Formatter{p}, field, options_);
                  } else {
@@ -5568,7 +5568,7 @@ void MessageGenerator::EmitCheckAndSerializeField(const FieldDescriptor* field,
     return;
   }
 
-  if (field->options().weak()) {
+  if (false /* weak fields deprecated */) {
     p->Emit({{"emit_body", [&] { emit_body(); }}},
             R"cc(
               if (has_$name$()) {
