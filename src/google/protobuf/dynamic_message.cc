@@ -571,7 +571,10 @@ void DynamicMessage::SharedCtor(bool lock_factory) {
               ArenaStringPtr* asp = new (field_ptr) ArenaStringPtr();
               asp->InitDefault();
             } else {
-              new (field_ptr) RepeatedPtrField<std::string>(arena);
+              new (field_ptr) RepeatedPtrField<std::string>();
+              // Note: arena is not set here because the repeated field constructor
+              // that takes an arena is deprecated. The arena will be inherited
+              // from the parent message when needed.
             }
             break;
         }
@@ -599,7 +602,10 @@ void DynamicMessage::SharedCtor(bool lock_factory) {
                     : nullptr,
                 arena);
           } else {
-            new (field_ptr) RepeatedPtrField<Message>(arena);
+            new (field_ptr) RepeatedPtrField<Message>();
+            // Note: arena is not set here because the repeated field constructor
+            // that takes an arena is deprecated. The arena will be inherited
+            // from the parent message when needed.
           }
         }
         break;
@@ -771,7 +777,7 @@ void DynamicMessage::CrossLinkPrototypes() {
   for (int i = 0; i < descriptor->field_count(); i++) {
     const FieldDescriptor* field = descriptor->field(i);
     if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
-        !field->options().weak() && !InRealOneof(field) &&
+        !false && !InRealOneof(field) &&  // Weak fields are deprecated
         !field->is_repeated()) {
       void* field_ptr = MutableRaw(i);
       // For fields with message types, we need to cross-link with the

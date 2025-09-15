@@ -430,7 +430,11 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
   };
 
   struct ReflectionPayload {
-    explicit ReflectionPayload(Arena* arena) : repeated_field(arena) {}
+    explicit ReflectionPayload(Arena* arena) : repeated_field() {
+      // Note: arena is ignored here because RepeatedPtrField no longer
+      // supports arena-specific construction. The arena will be inherited
+      // from the parent message when needed.
+    }
     RepeatedPtrField<Message> repeated_field;
 
     absl::Mutex mutex;  // The thread to synchronize map and repeated

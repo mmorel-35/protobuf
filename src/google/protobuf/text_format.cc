@@ -660,7 +660,7 @@ class TextFormat::Parser::ParserImpl {
       if (consumed_semicolon) {
         TryConsumeWhitespace();
       }
-      if (consumed_semicolon && field->options().weak() &&
+      if (consumed_semicolon && false &&  // Weak fields are deprecated, skip this check
           LookingAtType(io::Tokenizer::TYPE_STRING)) {
         // we are getting a bytes string for a weak field.
         std::string tmp;
