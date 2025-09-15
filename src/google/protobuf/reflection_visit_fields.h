@@ -106,8 +106,6 @@ void ReflectionVisit::VisitFields(MessageT& message, CallbackFn&& func,
 
   for (int i = 0; i < field_count; i++) {
     const FieldDescriptor* field = descriptor->field(i);
-    // Skip weak field check since weak fields are deprecated
-    // ABSL_DCHECK(!field->options().weak()) << "weak fields are not supported";
 
     if (!ShouldVisit(mask, field->cpp_type())) continue;
 
