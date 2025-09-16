@@ -1068,10 +1068,15 @@ class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedPtrField final
 
   // Arena enabled constructors: for internal use only.
   RepeatedPtrField(internal::InternalVisibility, Arena* arena)
-      : RepeatedPtrField(arena) {}
+      : RepeatedPtrFieldBase(arena) {
+    // Use base constructor directly to avoid deprecated RepeatedPtrField(arena)
+  }
   RepeatedPtrField(internal::InternalVisibility, Arena* arena,
                    const RepeatedPtrField& rhs)
-      : RepeatedPtrField(arena, rhs) {}
+      : RepeatedPtrFieldBase(arena) {
+    // Use base constructor directly to avoid deprecated RepeatedPtrField(arena, rhs)
+    MergeFrom(rhs);
+  }
 
   // TODO: make constructor private
   [[deprecated("Use Arena::Create<RepeatedPtrField<...>>(Arena*) instead")]]

@@ -3950,7 +3950,7 @@ void FieldDescriptor::DebugString(
 
   // Label is omitted for maps, oneof, and plain proto3 fields.
   if (is_map() || real_containing_oneof() ||
-      (!is_required() && !is_repeated() && !has_optional_keyword())) {
+      (!is_required() && !is_repeated() && !has_presence())) {
     label.clear();
   }
   // Label is omitted for optional and required fields under editions.
@@ -7979,7 +7979,7 @@ void DescriptorBuilder::CrossLinkField(FieldDescriptor* field,
     // if weak fields exist or not so that we don't need to force building
     // weak dependencies. However the name lookup rules for symbols are
     // somewhat complicated, so I defer it too another CL.
-    bool is_weak = !pool_->enforce_weak_ && proto.options().weak();
+    bool is_weak = false;  // Weak fields are deprecated, always treat as false
     bool is_lazy = pool_->lazily_build_dependencies_ && !is_weak;
 
     Symbol type =
@@ -10696,9 +10696,8 @@ bool HasPreservingUnknownEnumSemantics(const FieldDescriptor* field) {
 }
 
 HasbitMode GetFieldHasbitModeWithoutProfile(const FieldDescriptor* field) {
-  // Do not generate hasbits for "real-oneof", weak, or extension fields.
-  if (field->real_containing_oneof() || field->options().weak() ||
-      field->is_extension()) {
+  // Do not generate hasbits for "real-oneof" or extension fields.
+  if (field->real_containing_oneof() || field->is_extension()) {
     return HasbitMode::kNoHasbit;
   }
 

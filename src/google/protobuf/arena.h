@@ -447,8 +447,9 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8)
                                          Args&&... args) {
       if constexpr (internal::IsRepeatedPtrFieldType<T>::value) {
         using ArenaRepT = typename internal::RepeatedPtrFieldArenaRep<T>::Type;
-        auto* arena_repr =
-            new (ptr) ArenaRepT(arena, static_cast<Args&&>(args)...);
+        // Repeated pointer fields no longer have an arena constructor, so
+        // use the default constructor and rely on the arena being set separately.
+        auto* arena_repr = new (ptr) ArenaRepT(static_cast<Args&&>(args)...);
         return arena_repr;
       } else {
         return new (ptr) T(arena, static_cast<Args&&>(args)...);

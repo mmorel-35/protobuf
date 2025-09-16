@@ -1,4 +1,6 @@
 build --cxxopt=-std=c++17 --host_cxxopt=-std=c++17
+build --copt="-Wall"
+build --copt="-Werror"
 
 # TODO: ErrorProne's SelfAssertions are violated in protobuf's test
 build --javacopt=-Xep:SelfAssertion:WARN
